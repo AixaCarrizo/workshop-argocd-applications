@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: example-service
+spec:
+  generators:
+  - list:
+      elements:
+        - env: dev
+          server: test-dev
+          chart_version: "<chart-version>"
+        - env: stg
+          server: test-stg
+          chart_version: "<chart-version>"
+        - env: prd
+          server: test-prd
+          chart_version: "<chart-version>"
+  template:
+    metadata:
+      name: "example-service-{{ env }}"
+    spec:
+      destination:
+        name: "{{ server }}"
+        namespace: "example-namespace"
+      project: "test-{{ env }}"
+      revisionHistoryLimit: 10
+      ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+        - /spec/replicas
+      sources:
+        - repoURL: '<chart-repository-url>'
+          chart: '<chart-name>'
+          targetRevision: "{{ chart_version }}"
+          helm:
+            releaseName: example-service
+            valueFiles:
+            - $values/application-sets/example-service/values/values_{{ env }}.yaml
+        - repoURL: 'https://github.com/AixaCarrizo/workshop-argocd-applications.git'
+          targetRevision: main
+          ref: values
