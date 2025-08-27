@@ -8,13 +8,7 @@ spec:
       elements:
         - env: dev
           server: test-dev
-          chart_version: "<chart-version>"
-        - env: stg
-          server: test-stg
-          chart_version: "<chart-version>"
-        - env: prd
-          server: test-prd
-          chart_version: "<chart-version>"
+          chart_version: "21.1.23"
   template:
     metadata:
       name: "example-service-{{ env }}"
@@ -30,8 +24,8 @@ spec:
         jsonPointers:
         - /spec/replicas
       sources:
-        - repoURL: '<chart-repository-url>'
-          chart: '<chart-name>'
+        - repoURL: https://charts.bitnami.com/bitnami
+          chart: nginx
           targetRevision: "{{ chart_version }}"
           helm:
             releaseName: example-service
